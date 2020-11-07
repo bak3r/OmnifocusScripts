@@ -1,0 +1,44 @@
+/*{
+    "author": "Ales Tepina",
+    "targets": ["omnifocus"],
+    "type": "action",
+    "identifier": "com.mycompany.SetNewReviewDateForProjectsInFolder",
+    "version": "0.1",
+    "description": "Sets new review date for all projects that reside in folders",
+    "label": "NewReviewDateFolder",
+    "mediumLabel": "SetNewReviewDateOnFolder",
+    "paletteLabel": "SetNewReviewDateOnFolder",
+}*/
+(() => {
+    var action = new PlugIn.Action(function(selection,sender) {
+
+    var inputForm = new Form()
+    var dateFormatter = Formatter.Date.withStyle(Formatter.Date.Style.Short)
+    var dateField = new Form.Field.Date("newReviewDate","New review date",null,dateFormatter)
+    inputForm.addField(dateField)
+
+    let formPrompt = "Insert new date for projects within folder:"
+    let buttonTitle = "Continue"
+    formPromise = inputForm.show(formPrompt, buttonTitle)
+        
+    inputForm.validate = function(formObject){
+        newReviewDateStatus = (formObject.values["newReviewDate"]) ? true:false
+        validation = (newReviewDateStatus) ? true : false
+        return validation
+    }
+    
+    formPromise.then(function(formObject){
+        var projectNewReviewDate = formObject.values['newReviewDate']
+        
+        selection.folders.forEach(folder => {
+            folder.flattenedProjects.forEach(proj => {
+                proj.nextReviewDate = projectNewReviewDate
+            })
+        })
+    })
+        
+    });
+        
+    return action;
+})();
+
